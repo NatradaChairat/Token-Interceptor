@@ -73,22 +73,13 @@ class ExpiredTokenInterceptor (private val context: Context): Interceptor{
 
         val response = chain.proceed(refreshTokenRequest)
 
-        if (response.body != null) {
+        return if (response.body != null) {
             val refreshTokenResponse = Gson().fromJson(response.body!!.string(), RefreshTokenResponse::class.java)
+            RefreshToken.updateToken(refreshTokenResponse.access_token, refreshTokenResponse.refresh_token, refreshTokenResponse.expires_in)
 
-            val pref = defaultPrefs(context)
-            pref[TOKEN] = refreshTokenResponse.access_token
-            pref[REFRESH_TOKEN] = refreshTokenResponse.refresh_token
-            pref[EXPIRED_IN] = refreshTokenResponse.expires_in
-            pref[TIME_STAMP] = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Instant.now().epochSecond
-            } else {
-                System.currentTimeMillis() / 1000L
-            }
-
-            return true
+            true
         }else {
-            return false
+            false
         }
 
     }
