@@ -22,6 +22,11 @@ allprojects {
 }
 ```
 
+build.gradle (app)
+```bash
+implementation 'com.natradac.android:token-interceptor:0.1.0'
+```
+
 ## Usage V0.1.0
 
 Add Interceptor to OkHttp
