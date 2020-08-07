@@ -4,8 +4,22 @@ is library which providing interceptor for check current token is expired or not
 
 ## Installation
 
+build.gradle (project)
 ```bash
-  ...
+buildscript {
+  repositories {
+      maven {
+        url 'https://dl.bintray.com/natradachairat/maven'
+      }
+  }
+}
+allprojects {
+  repositories {
+      maven {
+        url 'https://dl.bintray.com/natradachairat/maven'
+      }
+   }
+}
 ```
 
 ## Usage
