@@ -22,7 +22,7 @@ allprojects {
 }
 ```
 
-## Usage
+## Usage V0.1.0
 
 Add Interceptor to OkHttp
 ```kotlin
@@ -44,6 +44,6 @@ RefreshToken.initEndpoint(endpoint = ..., context = ...)
 
 Init token
 ```kotlin
-RefreshToken.initToken( token = ..., refreshToken  = ..., expiresIn : ... as Long, timestamp : ... as Long)
+RefreshToken.updateToken( token = ..., refreshToken  = ..., expiresIn : ... as Long)
 ```
 
