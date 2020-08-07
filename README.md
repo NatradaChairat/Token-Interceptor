@@ -8,16 +8,12 @@ build.gradle (project)
 ```bash
 buildscript {
   repositories {
-      maven {
-        url 'https://dl.bintray.com/natradachairat/maven'
-      }
+       jcenter()
   }
 }
 allprojects {
   repositories {
-      maven {
-        url 'https://dl.bintray.com/natradachairat/maven'
-      }
+       jcenter()
    }
 }
 ```
