@@ -29,13 +29,12 @@ Add Interceptor to OkHttp
 ```kotlin
 import com.natradac.android.tokeninterceptor.ExpiredTokenInterceptor
 
-class OkHttpBuilder {
   ...
   OkHttpClient.Builder().apply {
     addInterceptor(ExpiredTokenInterceptor(context))
   }.build()
   ...
-}
+
 ```
 
 Init Refresh token endpoint
