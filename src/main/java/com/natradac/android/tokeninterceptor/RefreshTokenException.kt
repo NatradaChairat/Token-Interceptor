@@ -10,7 +10,3 @@ class RefreshTokenException : Exception(){
         get() = "Cannot refresh token"
 }
 
-class NotFoundEndpointException : Exception(){
-    override val message: String?
-        get() = "Endpoint not found"
-}
