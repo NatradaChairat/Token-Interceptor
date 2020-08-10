@@ -4,23 +4,37 @@ is library which providing interceptor for check current token is expired or not
 
 ## Installation
 
+build.gradle (project)
 ```bash
-  ...
+buildscript {
+  repositories {
+       jcenter()
+  }
+}
+allprojects {
+  repositories {
+       jcenter()
+   }
+}
 ```
 
-## Usage
+build.gradle (app)
+```bash
+implementation 'com.natradac.android:token-interceptor:0.1.0'
+```
+
+## Usage V0.1.0
 
 Add Interceptor to OkHttp
 ```kotlin
 import com.natradac.android.tokeninterceptor.ExpiredTokenInterceptor
 
-class OkHttpBuilder {
   ...
   OkHttpClient.Builder().apply {
     addInterceptor(ExpiredTokenInterceptor(context))
   }.build()
   ...
-}
+
 ```
 
 Init Refresh token endpoint
@@ -30,6 +44,6 @@ RefreshToken.initEndpoint(endpoint = ..., context = ...)
 
 Init token
 ```kotlin
-RefreshToken.initToken( token = ..., refreshToken  = ..., expiresIn : ... as Long, timestamp : ... as Long)
+RefreshToken.updateToken( token = ..., refreshToken  = ..., expiresIn : ... as Long)
 ```
 

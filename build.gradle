@@ -22,6 +22,35 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    tasks.withType(Javadoc).all {
+        enabled = false
+    }
+
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'token-interceptor'
+
+    publishedGroupId = 'com.natradac.android'
+    libraryName = 'TokenInterceptor'
+    artifact = 'token-interceptor'
+
+    libraryDescription = 'is library which providing interceptor for check current token is expired or not? If it\'s expired, The system will refresh token.'
+
+    siteUrl = 'https://github.com/NatradaChairat/tokenInterceptor'
+    gitUrl = 'https://github.com/NatradaChairat/tokenInterceptor.git'
+
+    libraryVersion = '0.1.0'
+
+    developerId = 'natradac'
+    developerName = 'Natrada Chairat'
+    developerEmail = 'chairat.natrada@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
 }
 
 dependencies {
@@ -38,3 +67,5 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
 
 }
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'

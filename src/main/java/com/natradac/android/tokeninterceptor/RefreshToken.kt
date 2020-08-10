@@ -13,10 +13,22 @@ object RefreshToken {
     private lateinit var mEndpoint: String
     private lateinit var mContext: Context
 
+    var accessTokenKey: String = "access_token"
+    var refreshTokenKey: String  = "refresh_token"
+    var expiresInKey: String = "expires_in"
+
     fun initEndpoint(endpoint: String, context: Context){
         mEndpoint = endpoint
         mContext = context
     }
+
+    fun updateResponseKey(accessToken: String, refreshToken: String, expiresIn: String){
+        accessTokenKey = accessToken
+        refreshTokenKey = refreshToken
+        expiresInKey = expiresIn
+    }
+
+    fun getContext() = mContext
 
     fun getEndpoint() = mEndpoint
 
@@ -32,7 +44,7 @@ object RefreshToken {
         }
     }
 
-    fun getToken() =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TOKEN, ""].toString()
-    fun getTimeStamp() =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TIME_STAMP, 0L].toString()
-    fun getExpiresIn() =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.EXPIRED_IN, 0L].toString()
+    fun getToken() : String? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TOKEN]
+    fun getTimeStamp() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TIME_STAMP]
+    fun getExpiresIn() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.EXPIRED_IN]
 }
