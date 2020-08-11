@@ -23,7 +23,7 @@ build.gradle (app)
 implementation 'com.natradac.android:token-interceptor:0.1.0'
 ```
 
-## Usage V0.1.0
+## Usage V0.2.0
 
 Add Interceptor to OkHttp
 ```kotlin
@@ -42,8 +42,32 @@ Init Refresh token endpoint
 RefreshToken.initEndpoint(endpoint = ..., context = ...)
 ```
 
+Default of request is
+```
+method : POST
+body : {
+    tokenId:
+    refreshToken:
+}
+```
+Can change request by using
+```kotlin
+RefreshToken.initRequest(requestMethod = ... as String, requestBody = ... as RequestBody?)
+```
+
+Default of response key is
+```
+"access_token"
+"refresh_token"
+"expires_in"
+```
+Can change response key by using
+```kotlin
+RefreshToken.updateResponseKey(accessToken = ... as String, refreshToken = ... as String, expiresIn = ... as String)
+```
+
 Init token
 ```kotlin
-RefreshToken.updateToken( token = ..., refreshToken  = ..., expiresIn : ... as Long)
+RefreshToken.updateToken( token = ... as String, refreshToken  = ... as String, expiresIn : ... as Long)
 ```
 
