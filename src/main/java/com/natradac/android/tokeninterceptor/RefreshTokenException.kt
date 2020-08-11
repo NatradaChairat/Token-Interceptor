@@ -8,9 +8,9 @@ class NotFoundTokenException : IOException(){
         get() = "Error Token not found"
 }
 
-class RefreshTokenException : Exception(){
+class RefreshTokenException(private val customMessage: String) : Exception(){
     override val message: String?
-        get() = "Cannot refresh token"
+        get() = customMessage
 }
 
 class NotFoundEndpointException : Exception(){
@@ -21,4 +21,9 @@ class NotFoundEndpointException : Exception(){
 class CannotMapResponseToObject : Error(){
     override val message: String?
         get() = "Cannot map the response to the object"
+}
+
+class RefreshTokenExpired : Exception(){
+    override val message: String?
+        get() = "Refresh token is expired"
 }

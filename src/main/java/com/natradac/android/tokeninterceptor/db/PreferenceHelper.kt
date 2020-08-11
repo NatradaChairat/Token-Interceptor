@@ -9,8 +9,9 @@ import java.time.Instant
 object PreferenceHelper {
     const val TOKEN = "TOKEN"
     const val REFRESH_TOKEN = "REFRESH_TOKEN"
-    const val EXPIRED_IN = "EXPIRED_IN"
     const val TIME_STAMP = "TIME_STAMP"
+    const val ACCESS_VALID = "ACCESS_VALID"
+    const val REFRESH_VALID = "REFRESH_VALID"
 
     fun defaultPrefs(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -46,7 +47,7 @@ object PreferenceHelper {
         }
     }
 
-    fun isTokenExpired(context: Context): Boolean{
+    fun isAccessTokenExpired(context: Context): Boolean{
         val prefs = defaultPrefs(context)
         val currentTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Instant.now().epochSecond
@@ -54,7 +55,19 @@ object PreferenceHelper {
             System.currentTimeMillis() / 1000L
         }
         val timeStamp = prefs.getLong(TIME_STAMP, 0)
-        val expired = prefs.getLong(EXPIRED_IN, 0)
+        val expired = prefs.getLong(ACCESS_VALID, 0)
+        return (currentTime - timeStamp) > expired
+    }
+
+    fun isRefreshTokenExpired(context: Context): Boolean{
+        val prefs = defaultPrefs(context)
+        val currentTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Instant.now().epochSecond
+        } else {
+            System.currentTimeMillis() / 1000L
+        }
+        val timeStamp = prefs.getLong(TIME_STAMP, 0)
+        val expired = prefs.getLong(REFRESH_VALID, 0)
         return (currentTime - timeStamp) > expired
     }
 
