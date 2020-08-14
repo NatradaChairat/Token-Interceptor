@@ -20,7 +20,7 @@ allprojects {
 
 build.gradle (app)
 ```bash
-implementation 'com.natradac.android:token-interceptor:0.1.0'
+implementation 'com.natradac.android:token-interceptor:0.2.2'
 ```
 
 ## Usage V0.2.0
