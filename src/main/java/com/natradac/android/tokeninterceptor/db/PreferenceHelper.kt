@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.preference.PreferenceManager
 import java.time.Instant
 
-object PreferenceHelper {
+internal object PreferenceHelper {
     const val TOKEN = "TOKEN"
     const val REFRESH_TOKEN = "REFRESH_TOKEN"
     const val TIME_STAMP = "TIME_STAMP"
@@ -69,6 +69,11 @@ object PreferenceHelper {
         val timeStamp = prefs.getLong(TIME_STAMP, 0)
         val expired = prefs.getLong(REFRESH_VALID, 0)
         return (currentTime - timeStamp) > expired
+    }
+
+    fun isTokenUnAvailable(context: Context): Boolean{
+        val prefs = defaultPrefs(context)
+        return prefs.getString(TOKEN, null) == null || isRefreshTokenExpired(context)
     }
 
 }

@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 5
-        versionName "1.3"
+        versionCode 6
+        versionName "1.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -42,7 +42,7 @@ ext {
     siteUrl = 'https://github.com/NatradaChairat/tokenInterceptor'
     gitUrl = 'https://github.com/NatradaChairat/tokenInterceptor.git'
 
-    libraryVersion = '0.2.3'
+    libraryVersion = '0.2.4'
 
     developerId = 'natradac'
     developerName = 'Natrada Chairat'

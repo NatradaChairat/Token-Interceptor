@@ -13,7 +13,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.time.Instant
 
-object RefreshToken {
+object RefreshTokenManager {
 
     private lateinit var mEndpoint: String
     private lateinit var mContext: Context
@@ -42,8 +42,6 @@ object RefreshToken {
         refreshValidKey = refreshValid
     }
 
-    fun getContext() = mContext
-
     fun updateToken(token: String, refreshToken: String, accessValid: Long, refreshValid: Long){
         val pref = PreferenceHelper.defaultPrefs(mContext)
         pref[PreferenceHelper.TOKEN] = token
@@ -57,11 +55,8 @@ object RefreshToken {
         }
     }
 
-    fun getToken() : String? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TOKEN]
     fun getRefreshToken() : String? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN]
     fun getTimeStamp() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TIME_STAMP]
-    fun getAccessValid() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.ACCESS_VALID]
-    fun getRefreshValid() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_VALID]
 
     fun getRequest(): Request {
 //        val body : RequestBody = mRequestBody ?: Gson().toJson(
@@ -70,7 +65,7 @@ object RefreshToken {
 //            PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN] ?: ""
 //        )).toRequestBody("application/json".toMediaTypeOrNull())
 
-        var endpoint = mEndpoint.replace("{{$accessTokenKey}}", getToken() ?: "", false)
+        var endpoint = mEndpoint.replace("{{$accessTokenKey}}", TokenManager.getToken(mContext) ?: "", false)
         endpoint = endpoint.replace("{{$refreshTokenKey}}", getRefreshToken() ?: "", false)
 
         return Request.Builder().method(mRequestMethod, mRequestBody)

@@ -48,12 +48,11 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
         }
     }
 
-
     private fun refreshToken(
         chain: Interceptor.Chain
     ) {
 
-        val response = chain.proceed(RefreshToken.getRequest())
+        val response = chain.proceed(RefreshTokenManager.getRequest())
 
         if (response.code == 200) {
             if (response.body != null) {
@@ -89,12 +88,12 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
     }
 
     private fun updateToken(data: Map<String, Object>) {
-        if (data[RefreshToken.accessTokenKey] != null && data[RefreshToken.refreshTokenKey] != null && data[RefreshToken.accessValidKey] != null && data[RefreshToken.refreshValidKey] != null) {
-            RefreshToken.updateToken(
-                data[RefreshToken.accessTokenKey].toString(),
-                data[RefreshToken.refreshTokenKey].toString(),
-                (data[RefreshToken.accessValidKey] as Double).toLong(),
-                (data[RefreshToken.refreshValidKey] as Double).toLong()
+        if (data[RefreshTokenManager.accessTokenKey] != null && data[RefreshTokenManager.refreshTokenKey] != null && data[RefreshTokenManager.accessValidKey] != null && data[RefreshTokenManager.refreshValidKey] != null) {
+            RefreshTokenManager.updateToken(
+                data[RefreshTokenManager.accessTokenKey].toString(),
+                data[RefreshTokenManager.refreshTokenKey].toString(),
+                (data[RefreshTokenManager.accessValidKey] as Double).toLong(),
+                (data[RefreshTokenManager.refreshValidKey] as Double).toLong()
             )
         }
     }
@@ -104,7 +103,7 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
         val pref = defaultPrefs(context)
 
         when (ConfigInterceptor.getTokenParamType()) {
-            TokenParamType.Query -> {
+            TokenRequestParamType.Query -> {
                 val url: HttpUrl = oldRequest.url
                     .newBuilder()
                     .addQueryParameter(
@@ -114,7 +113,7 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                     .build()
                 return oldRequest.newBuilder().url(url).build()
             }
-            TokenParamType.Header -> {
+            TokenRequestParamType.Header -> {
                 return oldRequest.newBuilder()
                     .addHeader(ConfigInterceptor.getTokenKey(), pref[TOKEN, ""].toString())
                     .build()
