@@ -8,9 +8,12 @@ import com.natradac.android.tokeninterceptor.db.PreferenceHelper.defaultPrefs
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.get
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.isAccessTokenExpired
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.isRefreshTokenExpired
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
+import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+
 
 class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
 
@@ -25,24 +28,17 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
             if (token == null) {
                 throw NotFoundTokenException()
             } else {
-                if (isAccessTokenExpired(context)) {
+                return if (isAccessTokenExpired(context)) {
                     //Refresh Token process
                     if (isRefreshTokenExpired(context)) {
                         throw RefreshTokenExpired()
                     } else {
                         refreshToken(chain)
-                        val modifiedRequest = request.newBuilder()
-                            .addHeader("Authorization", pref[TOKEN, ""].toString())
-                            .build()
-                        return chain.proceed(modifiedRequest)
+                        chain.proceed(getModifiedRequest(request, context))
                     }
 
-
                 } else {
-                    val modifiedRequest = request.newBuilder()
-                        .addHeader("Authorization", token)
-                        .build()
-                    return chain.proceed(modifiedRequest)
+                    chain.proceed(getModifiedRequest(request, context))
                 }
 
 
@@ -100,6 +96,32 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                 (data[RefreshToken.accessValidKey] as Double).toLong(),
                 (data[RefreshToken.refreshValidKey] as Double).toLong()
             )
+        }
+    }
+
+    private fun getModifiedRequest(oldRequest: Request, context: Context): Request {
+
+        val pref = defaultPrefs(context)
+
+        when (ConfigInterceptor.getTokenParamType()) {
+            TokenParamType.Query -> {
+                val url: HttpUrl = oldRequest.url
+                    .newBuilder()
+                    .addQueryParameter(
+                        ConfigInterceptor.getTokenKey(),
+                        pref[TOKEN, ""].toString()
+                    )
+                    .build()
+                return oldRequest.newBuilder().url(url).build()
+            }
+            TokenParamType.Header -> {
+                return oldRequest.newBuilder()
+                    .addHeader(ConfigInterceptor.getTokenKey(), pref[TOKEN, ""].toString())
+                    .build()
+            }
+            else -> {
+                return oldRequest
+            }
         }
     }
 }
