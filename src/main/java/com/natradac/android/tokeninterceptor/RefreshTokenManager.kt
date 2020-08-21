@@ -18,7 +18,7 @@ object RefreshTokenManager {
     private lateinit var mEndpoint: String
     private lateinit var mContext: Context
     private var mRequestMethod: String = "POST"
-    private var mRequestBody: RequestBody? = null
+    private var mJsonRequestBody: String? = null
 
     var accessTokenKey: String = "access_token"
     var refreshTokenKey: String  = "refresh_token"
@@ -30,9 +30,11 @@ object RefreshTokenManager {
         mContext = context
     }
 
-    fun initRequest(requestMethod: String, requestBody: RequestBody? = null){
+    fun initRequest(requestMethod: String, jsonRequestBody: String? = null){
         mRequestMethod = requestMethod
-        mRequestBody = requestBody
+        jsonRequestBody?.let {
+            mJsonRequestBody = it
+        }
     }
 
     fun updateResponseKey(accessToken: String, refreshToken: String, accessValid: String, refreshValid: String){
@@ -68,7 +70,11 @@ object RefreshTokenManager {
         var endpoint = mEndpoint.replace("{{$accessTokenKey}}", TokenManager.getToken(mContext) ?: "", false)
         endpoint = endpoint.replace("{{$refreshTokenKey}}", getRefreshToken() ?: "", false)
 
-        return Request.Builder().method(mRequestMethod, mRequestBody)
+
+        val modifiedJson = mJsonRequestBody?.replace("{{$refreshTokenKey}}", getRefreshToken() ?: "", false)
+        val modifiedRequestBody = modifiedJson?.toRequestBody("application/json".toMediaTypeOrNull())
+
+        return Request.Builder().method(mRequestMethod, modifiedRequestBody)
                 .url(endpoint)
                 .build()
     }

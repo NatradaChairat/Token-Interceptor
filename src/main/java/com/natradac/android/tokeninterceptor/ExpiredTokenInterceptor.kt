@@ -1,6 +1,7 @@
 package com.natradac.android.tokeninterceptor
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.TOKEN
@@ -12,6 +13,7 @@ import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 
 
@@ -111,14 +113,19 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                         pref[TOKEN, ""].toString()
                     )
                     .build()
-                return oldRequest.newBuilder().url(url).build()
+                val newRequest = oldRequest.newBuilder().url(url).build()
+                Log.d("${javaClass.name}: ", "Create Request: --> ${oldRequest.method} ${newRequest.url}")
+                return newRequest
             }
             TokenRequestParamType.Header -> {
-                return oldRequest.newBuilder()
+                val newRequest = oldRequest.newBuilder()
                     .addHeader(ConfigInterceptor.getTokenKey(), pref[TOKEN, ""].toString())
                     .build()
+                Log.d("${javaClass.name}: ", "Create Request: --> ${newRequest.method} ${newRequest.url}\n${newRequest.headers}")
+                return newRequest
             }
             else -> {
+                Log.d("${javaClass.name}: ", "Create Request: --> ${oldRequest.method} ${oldRequest.url}\n ${oldRequest.body}")
                 return oldRequest
             }
         }
