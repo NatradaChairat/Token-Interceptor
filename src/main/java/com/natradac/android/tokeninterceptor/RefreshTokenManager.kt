@@ -57,9 +57,6 @@ object RefreshTokenManager {
         }
     }
 
-    fun getRefreshToken() : String? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN]
-    fun getTimeStamp() : Long? =  PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TIME_STAMP]
-
     fun getRequest(): Request {
 //        val body : RequestBody = mRequestBody ?: Gson().toJson(
 //        RefreshTokenRequest(
@@ -67,15 +64,15 @@ object RefreshTokenManager {
 //            PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN] ?: ""
 //        )).toRequestBody("application/json".toMediaTypeOrNull())
 
-        var endpoint = mEndpoint.replace("{{$accessTokenKey}}", TokenManager.getToken(mContext) ?: "", false)
-        endpoint = endpoint.replace("{{$refreshTokenKey}}", getRefreshToken() ?: "", false)
+        var endpoint = mEndpoint.replace("{{$accessTokenKey}}", PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.TOKEN] ?: "", false)
+        endpoint = endpoint.replace("{{$refreshTokenKey}}", PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN] ?: "", false)
 
-
-        val modifiedJson = mJsonRequestBody?.replace("{{$refreshTokenKey}}", getRefreshToken() ?: "", false)
-        val modifiedRequestBody = modifiedJson?.toRequestBody("application/json".toMediaTypeOrNull())
+        val modifiedJson = mJsonRequestBody?.replace("{{$refreshTokenKey}}", PreferenceHelper.defaultPrefs(mContext)[PreferenceHelper.REFRESH_TOKEN] ?: "", false)
+        val modifiedRequestBody : RequestBody? = modifiedJson?.toRequestBody("application/json".toMediaTypeOrNull())
 
         return Request.Builder().method(mRequestMethod, modifiedRequestBody)
                 .url(endpoint)
                 .build()
     }
+
 }

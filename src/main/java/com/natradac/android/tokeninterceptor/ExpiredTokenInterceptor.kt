@@ -13,9 +13,7 @@ import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
-
 
 class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
 
@@ -38,12 +36,9 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                         refreshToken(chain)
                         chain.proceed(getModifiedRequest(request, context))
                     }
-
                 } else {
                     chain.proceed(getModifiedRequest(request, context))
                 }
-
-
             }
         } catch (e: Exception) {
             throw IOException(e.message)
@@ -54,8 +49,12 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
         chain: Interceptor.Chain
     ) {
 
-        val response = chain.proceed(RefreshTokenManager.getRequest())
-
+        val request = RefreshTokenManager.getRequest()
+        Log.d(javaClass.name, request.method + " --> " + request.url)
+        Log.d(javaClass.name, "Header " + request.headers)
+        Log.d(javaClass.name, "Body " + request.body)
+        val response = chain.proceed(request)
+        Log.d(javaClass.name, " <-- " + response.code + " " + request.url)
         if (response.code == 200) {
             if (response.body != null) {
                 val refreshTokenResponse: Map<String, Object> =
@@ -63,7 +62,7 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                         response.body!!.string(),
                         object : TypeToken<Map<String, Object>>() {}.type
                     )
-
+                Log.d(javaClass.name, "body: $refreshTokenResponse")
                 when {
                     refreshTokenResponse["data"] != null -> {
                         updateToken(refreshTokenResponse["data"] as Map<String, Object>)
@@ -85,7 +84,6 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
         } else {
             throw RefreshTokenException("Response code: ${response.code}, message: ${response.message}")
         }
-
 
     }
 
@@ -114,18 +112,24 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
                     )
                     .build()
                 val newRequest = oldRequest.newBuilder().url(url).build()
-                Log.d("${javaClass.name}: ", "Create Request: --> ${oldRequest.method} ${newRequest.url}")
+                Log.d(javaClass.name, newRequest.method + " --> " + newRequest.url)
+                Log.d(javaClass.name, "Header " + newRequest.headers.toString())
+                Log.d(javaClass.name, "Body " + newRequest.body.toString())
                 return newRequest
             }
             TokenRequestParamType.Header -> {
                 val newRequest = oldRequest.newBuilder()
                     .addHeader(ConfigInterceptor.getTokenKey(), pref[TOKEN, ""].toString())
                     .build()
-                Log.d("${javaClass.name}: ", "Create Request: --> ${newRequest.method} ${newRequest.url}\n${newRequest.headers}")
+                Log.d(javaClass.name, newRequest.method + " --> " + newRequest.url)
+                Log.d(javaClass.name, "Header " + newRequest.headers.toString())
+                Log.d(javaClass.name, "Body " + newRequest.body.toString())
                 return newRequest
             }
             else -> {
-                Log.d("${javaClass.name}: ", "Create Request: --> ${oldRequest.method} ${oldRequest.url}\n ${oldRequest.body}")
+                Log.d(javaClass.name, oldRequest.method + " --> " + oldRequest.url)
+                Log.d(javaClass.name, "Header " + oldRequest.headers.toString())
+                Log.d(javaClass.name, "Body " + oldRequest.body.toString())
                 return oldRequest
             }
         }
