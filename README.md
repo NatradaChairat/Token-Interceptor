@@ -1,4 +1,4 @@
-# TokenInterceptor
+# TokenInterceptor [![Download](https://api.bintray.com/packages/natradachairat/maven/token-interceptor/images/download.svg?version=0.2.7)](https://bintray.com/natradachairat/maven/token-interceptor/0.2.7/link)
 
 is library which providing interceptor for check current token is expired or not? If it's expired, The system will refresh token.
 
@@ -20,7 +20,7 @@ allprojects {
 
 build.gradle (app)
 ```bash
-implementation 'com.natradac.android:token-interceptor:0.2.26'
+implementation 'com.natradac.android:token-interceptor:0.2.7'
 ```
 
 ## Usage V0.2.0 above
