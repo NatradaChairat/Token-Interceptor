@@ -76,4 +76,13 @@ internal object PreferenceHelper {
         return prefs.getString(TOKEN, null) == null || isRefreshTokenExpired(context)
     }
 
+    fun clear(context: Context) {
+        val prefs = defaultPrefs(context)
+        prefs[TOKEN] = null
+        prefs[REFRESH_TOKEN] = null
+        prefs[TIME_STAMP] = null
+        prefs[ACCESS_VALID] = null
+        prefs[REFRESH_VALID] = null
+    }
+
 }

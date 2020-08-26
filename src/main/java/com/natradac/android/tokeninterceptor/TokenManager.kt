@@ -34,7 +34,6 @@ class TokenManager {
                         val request = RefreshTokenManager.getRequest()
                         Log.d(TokenManager::class.java.name, request.method + " --> " + request.url)
                         Log.d(TokenManager::class.java.name, "Header " + request.headers)
-                        Log.d(TokenManager::class.java.name, "Body " + request.body)
                         httpClient.newCall(request).enqueue(object : Callback{
                             override fun onFailure(call: Call, e: IOException) {
                                 callBackOnFailed.invoke(RefreshTokenException(e.message ?: "Refresh token error"))
@@ -94,6 +93,10 @@ class TokenManager {
                 )
                 callBackOnSuccess.invoke(data[RefreshTokenManager.accessTokenKey].toString())
             }
+        }
+
+        fun clear(context: Context){
+            PreferenceHelper.clear(context)
         }
 
     }
