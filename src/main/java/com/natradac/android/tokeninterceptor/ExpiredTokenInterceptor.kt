@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.natradac.android.tokeninterceptor.db.PreferenceHelper
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.TOKEN
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.defaultPrefs
 import com.natradac.android.tokeninterceptor.db.PreferenceHelper.get
@@ -15,29 +16,30 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
+class ExpiredTokenInterceptor(private val context: Context, private val prefName: String) :
+    Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        val pref = defaultPrefs(context)
+        val pref = defaultPrefs(context, prefName)
 
         try {
             val token = pref.getString(TOKEN, null)
             if (token == null) {
                 throw NotFoundTokenException()
             } else {
-                return if (isAccessTokenExpired(context)) {
+                return if (isAccessTokenExpired(context, prefName)) {
                     //Refresh Token process
-                    if (isRefreshTokenExpired(context)) {
+                    if (isRefreshTokenExpired(context, prefName)) {
                         throw RefreshTokenExpired()
                     } else {
                         refreshToken(chain)
-                        chain.proceed(getModifiedRequest(request, context))
+                        chain.proceed(getModifiedRequest(request))
                     }
                 } else {
-                    chain.proceed(getModifiedRequest(request, context))
+                    chain.proceed(getModifiedRequest(request))
                 }
             }
         } catch (e: Exception) {
@@ -48,7 +50,7 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
     private fun refreshToken(
         chain: Interceptor.Chain
     ) {
-        val request = RefreshTokenManager.getRequest()
+        val request = RefreshTokenManager.getRequest(context, prefName)
         Log.d(javaClass.name, request.method + " --> " + request.url)
         Log.d(javaClass.name, "Header " + request.headers)
         val response = chain.proceed(request)
@@ -86,19 +88,29 @@ class ExpiredTokenInterceptor(private val context: Context) : Interceptor {
     }
 
     private fun updateToken(data: Map<String, Object>) {
-        if (data[RefreshTokenManager.accessTokenKey] != null && data[RefreshTokenManager.refreshTokenKey] != null && data[RefreshTokenManager.accessValidKey] != null && data[RefreshTokenManager.refreshValidKey] != null) {
+        val pref = defaultPrefs(
+            context,
+            prefName
+        )
+        if (data[pref[PreferenceHelper.REFRESH_TOKEN_KEY, "refresh_token"]] != null &&
+            data[pref[PreferenceHelper.TOKEN_KEY, "access_token"]] != null &&
+            data[pref[PreferenceHelper.ACCESS_VALID_KEY, "access_valid"]] != null &&
+            data[pref[PreferenceHelper.REFRESH_VALID_KEY, "refresh_valid"]] != null
+        ) {
             RefreshTokenManager.updateToken(
-                data[RefreshTokenManager.accessTokenKey].toString(),
-                data[RefreshTokenManager.refreshTokenKey].toString(),
-                (data[RefreshTokenManager.accessValidKey] as Double).toLong(),
-                (data[RefreshTokenManager.refreshValidKey] as Double).toLong()
+                context,
+                prefName,
+                data[pref[PreferenceHelper.TOKEN_KEY, "access_token"]].toString(),
+                data[pref[PreferenceHelper.REFRESH_TOKEN_KEY, "refresh_token"]].toString(),
+                (data[pref[PreferenceHelper.ACCESS_VALID_KEY, "access_valid"]] as Double).toLong(),
+                (data[pref[PreferenceHelper.REFRESH_VALID_KEY, "refresh_valid"]] as Double).toLong()
             )
         }
     }
 
-    private fun getModifiedRequest(oldRequest: Request, context: Context): Request {
+    private fun getModifiedRequest(oldRequest: Request): Request {
 
-        val pref = defaultPrefs(context)
+        val pref = defaultPrefs(context, prefName)
 
         when (ConfigInterceptor.getTokenParamType()) {
             TokenRequestParamType.Query -> {

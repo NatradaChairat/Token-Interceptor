@@ -1,6 +1,6 @@
 package com.natradac.android.tokeninterceptor
 
-object ConfigInterceptor {
+object  ConfigInterceptor {
 
     private var mParamType: TokenRequestParamType = TokenRequestParamType.Original
     private var mKey: String = "Authorization"
